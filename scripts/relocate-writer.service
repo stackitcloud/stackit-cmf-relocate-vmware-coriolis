@@ -1,0 +1,12 @@
+[Unit]
+Description=One synthetic migration test write
+After=relocate-demo.service
+
+[Service]
+Type=oneshot
+User=relocate
+ExecStart=/usr/bin/curl --fail --silent --show-error --max-time 10 -X POST http://127.0.0.1:8080/api/writes
+StandardOutput=null
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes

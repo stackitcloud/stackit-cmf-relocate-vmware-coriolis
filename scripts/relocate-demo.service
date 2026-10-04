@@ -1,0 +1,20 @@
+[Unit]
+Description=Relocate migration acceptance workload
+After=network.target postgresql.service
+RequiresMountsFor=/srv/relocate-data
+
+[Service]
+User=relocate
+Group=relocate
+EnvironmentFile=/etc/relocate-demo.env
+ExecStart=/usr/bin/java -Xms128m -Xmx512m -jar /opt/relocate-demo/app.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

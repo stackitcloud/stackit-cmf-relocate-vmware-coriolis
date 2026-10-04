@@ -1,0 +1,17 @@
+[Unit]
+Description=Relocate nested ESXi lab
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/lib/scf-esxi
+ExecStartPre=/sbin/modprobe kvm_intel
+ExecStartPre=/usr/local/sbin/esxi-network-ensure.sh
+ExecStart="/usr/bin/qemu-system-x86_64" "-name" "scf-esxi-compatibility" "-machine" "q35" "-accel" "kvm" "-cpu" "host,vmx=on" "-smp" "4,sockets=1,cores=4,threads=1" "-m" "10240" "-no-user-config" "-nodefaults" "-display" "none" "-vga" "std" "-qmp" "unix:/var/lib/scf-esxi/qmp.sock,server=on,wait=off" "-serial" "file:/var/lib/scf-esxi/serial.log" "-drive" "file=/var/lib/scf-esxi/system.qcow2,if=none,id=system,format=qcow2" "-device" "ide-hd,bus=ide.0,drive=system,serial=SCFESXISYSTEM" "-drive" "file=/var/lib/scf-esxi/datastore.qcow2,if=none,id=datastore,format=qcow2" "-device" "ide-hd,bus=ide.1,drive=datastore,serial=SCFESXIDATASTORE" "-boot" "order=c,menu=off" "-netdev" "tap,id=management,ifname=scf-esxi-tap,script=no,downscript=no" "-device" "vmxnet3,netdev=management,mac=52:54:00:12:34:56"
+RuntimeMaxSec=infinity
+Restart=no
+# Shut down ESXi through its UI before stopping this outer QEMU service.
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

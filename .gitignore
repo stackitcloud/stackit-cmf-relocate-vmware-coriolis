@@ -1,0 +1,21 @@
+.local/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.pem
+*.key
+credentials*.json
+.env
+__pycache__/
+*.pyc
+*.iso
+*.ova
+*.vmdk
+*.qcow2
+*.raw
+# Local Java build output
+workload/target/
+PLAN.md
+SUPPORT-TICKET.md

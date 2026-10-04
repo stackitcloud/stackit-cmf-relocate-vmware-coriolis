@@ -1,0 +1,10 @@
+[Unit]
+Description=Generate a synthetic database write every 10 seconds
+
+[Timer]
+OnBootSec=120
+OnUnitActiveSec=10
+Unit=relocate-writer.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,8 @@
+{$ESXI_PUBLIC_HOST} {
+    reverse_proxy https://10.0.2.15 {
+        transport http {
+            tls_trusted_ca_certs /etc/caddy/esxi-ca.pem
+            tls_server_name localhost.localdomain
+        }
+    }
+}

@@ -1,0 +1,33 @@
+add table inet scf_workload
+flush table inet scf_workload
+table inet scf_workload {
+    chain input {
+        type filter hook input priority -10; policy accept;
+        iifname "scf-esxi-wg" drop
+    }
+    chain forward {
+        type filter hook forward priority -10; policy accept;
+        iifname "scf-esxi-br" ip saddr 10.0.2.20 oifname "enp3s0" ct state new,established,related accept
+        oifname "scf-esxi-br" ip daddr 10.0.2.20 iifname "enp3s0" ct state established,related accept
+        iifname "scf-esxi-wg" oifname "scf-esxi-br" ip saddr 10.77.241.2 ip daddr 10.0.2.15 tcp dport { 443, 902 } ct state new,established accept
+        iifname "scf-esxi-br" oifname "scf-esxi-wg" ip saddr 10.0.2.15 ip daddr 10.77.241.2 ct state established,related accept
+        iifname "enp3s0" oifname "scf-esxi-br" ip saddr 188.34.106.95 ip daddr 10.0.2.15 tcp dport 902 ct state new,established accept
+        iifname "scf-esxi-br" oifname "enp3s0" ip saddr 10.0.2.15 ip daddr 188.34.106.95 ct state established,related accept
+        iifname "scf-esxi-wg" drop
+        oifname "scf-esxi-wg" drop
+        iifname "scf-esxi-br" drop
+        oifname "scf-esxi-br" drop
+    }
+}
+add table ip scf_workload_nat
+flush table ip scf_workload_nat
+table ip scf_workload_nat {
+    chain prerouting {
+        type nat hook prerouting priority dstnat; policy accept;
+        iifname "enp3s0" ip saddr 188.34.106.95 ip daddr 10.77.240.50 tcp dport 902 dnat to 10.0.2.15:902
+    }
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+        ip saddr 10.0.2.20 oifname "enp3s0" masquerade
+    }
+}

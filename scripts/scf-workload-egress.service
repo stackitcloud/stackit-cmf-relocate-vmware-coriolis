@@ -1,0 +1,13 @@
+[Unit]
+Description=Private Relocate guest outbound NAT
+After=network-pre.target
+Before=scf-esxi.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nft -f /etc/scf-workload-egress.nft
+ExecStartPost=/usr/sbin/sysctl -w net.ipv4.ip_forward=1
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
